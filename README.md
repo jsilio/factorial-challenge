@@ -12,7 +12,7 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **tRPC** - End-to-end type-safe APIs
 - **Node.js** - Runtime environment
 - **Prisma** - TypeScript-first ORM
-- **SQLite/Turso** - Database engine
+- **SQLite** - Database engine
 - **Turborepo** - Optimized monorepo build system
 
 ## Getting Started
@@ -27,18 +27,23 @@ pnpm install
 
 This project uses SQLite with Prisma.
 
-1. Start the local SQLite database:
+1. Create a `.env` file in the `apps/server` directory with the SQLite connection string:
 
 ```bash
-cd apps/server && pnpm db:local
+cd apps/server
+echo "DATABASE_URL=\"file:./dev.db\"" > .env
 ```
 
-2. Update your `.env` file in the `apps/server` directory with the appropriate connection details if needed.
-
-3. Generate the Prisma client and push the schema:
+2. Generate the Prisma client and push the schema:
 
 ```bash
-pnpm db:push
+cd apps/server && pnpm db:generate && pnpm db:push
+```
+
+3. Seed the database with initial bike parts and configuration data:
+
+```bash
+cd apps/server && pnpm db:seed
 ```
 
 Then, run the development server:
@@ -69,3 +74,4 @@ factorial-challenge/
 - `pnpm check-types`: Check TypeScript types across all apps
 - `pnpm db:push`: Push schema changes to database
 - `pnpm db:studio`: Open database studio UI
+- `pnpm db:seed`: Seed the database with initial data

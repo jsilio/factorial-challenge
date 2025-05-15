@@ -1,10 +1,58 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated"
+  provider     = "prisma-client-js"
+  output       = "../generated"
   moduleFormat = "esm"
 }
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+enum PartCategory {
+  FRAME_TYPE
+  FRAME_FINISH
+  WHEELS
+  RIM_COLOR
+  CHAIN
+}
+
+model PartOption {
+  id        String       @id @default(cuid())
+  category  PartCategory
+  value     String // e.g. "full-suspension", "matte", "road"
+  label     String
+  basePrice Float
+
+  restricts    CompatibilityRule[] @relation("source")
+  restrictedBy CompatibilityRule[] @relation("target")
+
+  pricingRules PricingRule[]
+
+  @@unique([category, value])
+}
+
+model CompatibilityRule {
+  id             String     @id @default(cuid())
+  sourceOptionId String
+  sourceOption   PartOption @relation("source", fields: [sourceOptionId], references: [id], onDelete: Cascade)
+  targetOptionId String
+  targetOption   PartOption @relation("target", fields: [targetOptionId], references: [id], onDelete: Cascade)
+  message        String?
+}
+
+model PricingRule {
+  id              String     @id @default(cuid())
+  partOptionId    String
+  partOption      PartOption @relation(fields: [partOptionId], references: [id], onDelete: Cascade)
+  conditions      String // Format: [{"category": "FRAME_TYPE", "value": "full-suspension"}, ...]
+  priceAdjustment Float
+}
+
+model BikeConfiguration {
+  id         String   @id @default(cuid())
+  name       String?
+  createdAt  DateTime @default(now())
+  selections String // JSON of selected options
+  totalPrice Float
 }
