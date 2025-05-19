@@ -104,7 +104,7 @@ async function main() {
     {} as Record<string, (typeof partOptions)[0]>,
   );
 
-  const compatibilityRulesData = [
+  const compatibilityRules = [
     {
       sourceOptionId: optionMap.WHEELS_mountain.id,
       targetOptionId: optionMap.FRAME_TYPE_diamond.id,
@@ -125,12 +125,10 @@ async function main() {
   ];
 
   await Promise.all(
-    compatibilityRulesData.map((data) =>
-      prisma.compatibilityRule.create({ data }),
-    ),
+    compatibilityRules.map((data) => prisma.compatibilityRule.create({ data })),
   );
 
-  const pricingRulesData = [
+  const pricingRules = [
     {
       partOptionId: optionMap.FRAME_FINISH_matte.id,
       conditions: JSON.stringify([
@@ -141,7 +139,7 @@ async function main() {
   ];
 
   await Promise.all(
-    pricingRulesData.map((data) => prisma.pricingRule.create({ data })),
+    pricingRules.map((data) => prisma.pricingRule.create({ data })),
   );
 
   await prisma.bikeConfiguration.create({
