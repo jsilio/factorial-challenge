@@ -1,7 +1,7 @@
-import { z } from "zod";
-
-import { PartCategory } from "@/db";
+import { PartCategory, type PartOption } from "@/db";
 import { publicProcedure, router } from "@/lib/trpc";
+
+import { BikeConfigInput, BikeConfigOutput } from "./schema";
 
 export const bikeRouter = router({
   getPartOptions: publicProcedure.query(async ({ ctx }) => {
@@ -25,24 +25,81 @@ export const bikeRouter = router({
   }),
 
   calculatePrice: publicProcedure
-    .input(
-      z.object({
-        selections: z.record(z.string(), z.string()),
-      }),
-    )
+    .input(BikeConfigInput)
+    .output(BikeConfigOutput)
     .query(async ({ ctx, input }) => {
-      const { selections } = input;
-      const filters = Object.entries(selections).map(([category, value]) => ({
-        category: PartCategory[category as keyof typeof PartCategory],
-        value,
-      }));
       const selectedOptions = await ctx.db.partOption.findMany({
-        where: { OR: filters },
+        where: {
+          OR: Object.entries(input.selections).map(([category, value]) => ({
+            category: PartCategory[category as keyof typeof PartCategory],
+            value,
+          })),
+        },
       });
-      const totalPrice = selectedOptions.reduce(
+
+      const optionsByCategory: Record<string, PartOption> = {};
+      const selectedIds = new Set<string>();
+
+      for (const option of selectedOptions) {
+        optionsByCategory[option.category] = option;
+        selectedIds.add(option.id);
+      }
+
+      const compatibilityRules = await ctx.db.compatibilityRule.findMany();
+
+      const errors = compatibilityRules
+        .filter(
+          (rule) =>
+            selectedIds.has(rule.sourceOptionId) &&
+            selectedIds.has(rule.targetOptionId),
+        )
+        .map((rule) => rule.message || "Invalid combination selected.");
+
+      if (errors.length > 0) {
+        return { totalPrice: null, errors, breakdown: [] };
+      }
+
+      const breakdown = selectedOptions.map((option) => ({
+        label: option.label,
+        basePrice: option.basePrice,
+        adjustment: 0,
+      }));
+
+      let totalPrice = selectedOptions.reduce(
         (sum, option) => sum + option.basePrice,
         0,
       );
-      return { totalPrice, errors: [] };
+
+      const pricingRules = await ctx.db.pricingRule.findMany();
+
+      for (const rule of pricingRules) {
+        const conditions = JSON.parse(rule.conditions) as Array<{
+          category: string;
+          value: string;
+        }>;
+
+        const matchesAllConditions = conditions.every(({ category, value }) => {
+          const selectedOption = optionsByCategory[category];
+          return selectedOption?.value === value;
+        });
+
+        if (matchesAllConditions) {
+          const affectedOption = selectedOptions.find(
+            (option) => option.id === rule.partOptionId,
+          );
+
+          if (affectedOption) {
+            totalPrice += rule.priceAdjustment;
+
+            const breakdownItem = breakdown.find(
+              (item) => item.label === affectedOption.label,
+            );
+
+            if (breakdownItem) breakdownItem.adjustment += rule.priceAdjustment;
+          }
+        }
+      }
+
+      return { totalPrice, errors: [], breakdown };
     }),
 });
