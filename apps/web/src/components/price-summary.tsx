@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePriceCalculator } from "@/hooks/use-price-calculator";
 
 interface PriceItem {
   label: string;
@@ -11,20 +12,13 @@ interface PriceItem {
 }
 
 interface PriceSummaryProps {
-  isLoading: boolean;
-  totalPrice: number | null;
-  breakdown: PriceItem[];
-  errors: string[];
-  onSubmit: () => void;
+  selections: Record<string, string>;
 }
 
-export function PriceSummary({
-  isLoading,
-  totalPrice,
-  breakdown,
-  errors,
-  onSubmit,
-}: PriceSummaryProps) {
+export function PriceSummary({ selections }: PriceSummaryProps) {
+  const { isLoading, breakdown, errors, totalPrice } =
+    usePriceCalculator(selections);
+
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -79,11 +73,7 @@ export function PriceSummary({
           <span className="font-semibold">Total</span>
           <span className="text-xl font-bold">{totalPrice}€</span>
         </div>
-        <Button
-          className="w-full mt-4"
-          onClick={onSubmit}
-          disabled={!totalPrice}
-        >
+        <Button className="w-full mt-4" disabled={!totalPrice}>
           Order Now
         </Button>
       </>

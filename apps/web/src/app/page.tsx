@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { trpc } from "@/utils/trpc";
 import { BikeConfigInput } from "../../../server/src/routers/schema";
-import { BikeConfigForm } from "@/components/bike-config-form";
+import { BikeConfigurator } from "@/components/bike-configurator";
 import { PriceSummary } from "@/components/price-summary";
 import { usePriceCalculator } from "@/hooks/use-price-calculator";
 
@@ -19,57 +19,22 @@ export default function BikePage() {
 
   const selections = form.watch("selections");
 
-  const { data: partOptions, isLoading: isLoadingParts } = useQuery(
-    trpc.bike.getPartOptions.queryOptions(),
-  );
-
-  const priceDetails = usePriceCalculator(selections);
-
-  const categories = partOptions ? Object.keys(partOptions) : [];
-
-  const handleSubmit = form.handleSubmit((data) => {
-    console.log(data);
-  });
-
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 order-1 lg:order-1">
           <Card>
             <CardHeader>
-              <CardTitle>Configure your dream</CardTitle>
+              <CardTitle>Price</CardTitle>
             </CardHeader>
             <CardContent>
-              <Form {...form}>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <BikeConfigForm
-                    categories={categories}
-                    partOptions={partOptions}
-                    isLoading={isLoadingParts}
-                  />
-                </form>
-              </Form>
+              <PriceSummary selections={selections} />
             </CardContent>
           </Card>
         </div>
 
-        <div>
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Price</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PriceSummary
-                  isLoading={priceDetails.isLoading}
-                  totalPrice={priceDetails.totalPrice}
-                  breakdown={priceDetails.breakdown}
-                  errors={priceDetails.errors}
-                  onSubmit={handleSubmit}
-                />
-              </CardContent>
-            </Card>
-          </div>
+        <div className="order-2 lg:order-2">
+          <BikeConfigurator />
         </div>
       </div>
     </div>
