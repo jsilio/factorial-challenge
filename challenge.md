@@ -74,18 +74,6 @@ The problem statement serves as a starting point for identifying and solving pro
 
 Success cannot be guaranteed by following a specific recipe. Some people may spend twice the recommended time and still deliver a subpar solution, while others may spend half the time and deliver an excellent one. The most important thing is to produce **something you are proud of**. That's why we encourage you to showcase a piece of software you have already developed rather than starting from scratch.
 
-### Ask if you don’t understand something
-
-We won't disregard you if you have questions. While we don't want to stifle your creativity, we encourage you to ask questions and consider different situations when proposing a solution. As we mentioned earlier, it's important not to take things too personally and to feel free to add your own unique touch to the solution. However, this doesn't mean that there are specific conditions that your solution must meet. So, please don't hesitate to ask if you have any questions. 😊
-
-### What are we going to evalute
-
-This tech challenge will allow us to evaluate 3 skills:
-
-- **Research →** How deeply you understand a problem before you start to write a single line of code. This skill is fundamental for an engineer, understand deeply a problem think as the final user and see things other people don’t is essential to create awesome solutions.
-- **Planning →** What goes first? It’s impossible to achieve everything in only 8 hours, we will evaluate what are the things you decided are important to do to provide a solution on time.
-- **Implementation →** Good Code matters, at the end we are developers and we have to solve the problem we have in front of us, at this point we will evaluate your code and your decisions.
-
 ### Presentation
 
 Please note that the technical challenge consists of two parts:
