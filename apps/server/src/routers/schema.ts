@@ -3,6 +3,7 @@ import { z } from "zod";
 export const BikeConfigInput = z.object({
   selections: z.record(z.string(), z.string()),
 });
+export type BikeConfigInput = z.infer<typeof BikeConfigInput>;
 
 const BikeBreakdown = z.object({
   label: z.string(),
@@ -15,3 +16,4 @@ export const BikeConfigOutput = z.object({
   errors: z.array(z.string()),
   breakdown: z.array(BikeBreakdown),
 });
+export type BikeConfigOutput = z.infer<typeof BikeConfigOutput>;
