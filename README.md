@@ -2,15 +2,11 @@
 
 A full-stack MVP for Markus' Bike Shop, enabling customers and staff to configure custom bikes, enforce compatibility rules, and calculate dynamic pricing in real time.
 
----
-
-## 🏗️ Project Overview
+## Project Overview
 
 This project is a monorepo built with modern TypeScript tooling (Next.js, tRPC, Prisma, Tailwind, shadcn/ui). It uses **Turborepo** for monorepo orchestration and **pnpm workspaces** for efficient dependency management. Users can select bike parts, business rules are enforced for valid configurations, and prices—including combination-based adjustments—are calculated instantly.
 
----
-
-## 🚦 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -51,7 +47,7 @@ This project uses SQLite with Prisma. To set up the database:
 
 ---
 
-## 📜 Available Scripts
+## Available Scripts
 
 All scripts are run from the root using Turborepo and pnpm workspaces:
 
@@ -67,9 +63,16 @@ All scripts are run from the root using Turborepo and pnpm workspaces:
 - `pnpm db:seed`: Seed the database with initial data
 - `pnpm format`: Format codebase with Prettier
 
----
+## Project Structure
 
-## 🗺️ Architecture Overview
+```
+factorial-challenge/
+├── apps/
+│   ├── web/         # Frontend (Next.js)
+│   └── server/      # Backend (Hono, tRPC, Prisma)
+```
+
+## Architecture Overview
 
 - **Frontend (`apps/web`)**:  
   Built with Next.js and React, using react-query for data fetching and react-hook-form for form state.  
@@ -87,20 +90,7 @@ All scripts are run from the root using Turborepo and pnpm workspaces:
 - **Database**:  
   SQLite, seeded with all parts, rules, and pricing logic.
 
----
-
-## 📂 Project Structure
-
-```
-factorial-challenge/
-├── apps/
-│   ├── web/         # Frontend (Next.js)
-│   └── server/      # Backend (Hono, tRPC, Prisma)
-```
-
----
-
-## ✨ Key Features
+## Key Features
 
 - **Bike Configurator UI**:  
   Select frame, finish, wheels, rim color, and chain.  
@@ -116,9 +106,7 @@ factorial-challenge/
 - **Error Handling & Feedback**:  
   Invalid configurations are clearly flagged, with actionable feedback and reset options.
 
----
-
-## 🧠 Design Decisions & Trade-offs
+## Design Decisions & Trade-offs
 
 - **tRPC** was chosen for end-to-end type safety and rapid prototyping.
 - **Rules and pricing logic** are centralized in the backend for maintainability and extensibility.
@@ -127,12 +115,11 @@ factorial-challenge/
 
 **Trade-offs:**
 
-- No admin UI for managing parts/rules (could be added).
-- Minimal test coverage due to time constraints (see below for improvements).
+- No bike preview images/renderings
+- No admin UI for managing parts/rules
+- Minimal test coverage due to time constraints
 
----
-
-## 🛠️ Rules & Pricing System
+## Rules & Pricing System
 
 - **Rules**:  
   Defined in the database (`compatibilityRule` table).  
@@ -149,9 +136,7 @@ factorial-challenge/
     - Calculates the total price, applying any relevant pricing rules.
     - Returns a breakdown and any errors to the frontend.
 
----
-
-## 🧩 Extensibility
+## Extensibility
 
 - **Adding new parts**:  
   Add to the `partOption` table and update the seed script.
@@ -161,8 +146,6 @@ factorial-challenge/
 
 - **UI**:  
   Dynamically renders categories and options from backend data—no hardcoding.
-
----
 
 ## Future Improvements
 
@@ -181,5 +164,3 @@ factorial-challenge/
 
 - **Accessibility & UX**:  
   More visual feedback, accessibility improvements, and polish.
-
----
