@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { trpc } from "@/utils/trpc";
+import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
+import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PriceSummaryProps {
