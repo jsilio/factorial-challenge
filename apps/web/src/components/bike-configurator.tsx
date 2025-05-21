@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
+import { BikePreview } from "@/components/bike-preview";
 import { PriceSummary } from "@/components/price-summary";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,11 +64,14 @@ export function BikeConfigurator() {
 
   return (
     <main className="container mx-auto max-w-7xl py-8">
-      <div className="grid gap-12 lg:grid-cols-[1fr_400px]">
-        <PriceSummary
-          selections={selections}
-          onSelectionReset={handleResetAllSelections}
-        />
+      <div className="grid gap-12 lg:grid-cols-[1fr_400px] relative">
+        <section className="flex flex-col gap-8">
+          <BikePreview />
+          <PriceSummary
+            selections={selections}
+            onSelectionReset={handleResetAllSelections}
+          />
+        </section>
 
         <Card>
           <CardHeader>

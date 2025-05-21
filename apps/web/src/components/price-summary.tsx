@@ -48,7 +48,7 @@ export function PriceSummary({
   const hasErrors = data?.errors && data.errors.length > 0;
 
   return (
-    <Card className="sticky top-20 h-fit border-0 bg-muted/40">
+    <Card className="sticky top-20 h-fit border-0 bg-muted/70">
       <CardHeader className="flex justify-between items-center">
         <CardTitle className="text-lg">Price Summary</CardTitle>
         {selectionCount > 0 && onSelectionReset && hasErrors && (
