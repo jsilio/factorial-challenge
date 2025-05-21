@@ -1,9 +1,9 @@
 "use client";
 
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/utils/trpc";
 
-import { Toaster } from "./ui/toast";
+import { Toaster } from "@/components/ui/toast";
+import { queryClient } from "@/utils/trpc";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

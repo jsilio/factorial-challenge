@@ -2,7 +2,7 @@
 
 import { Bike } from "lucide-react";
 
-export default function Header() {
+export function Header() {
   return (
     <header className="bg-white ">
       <nav
