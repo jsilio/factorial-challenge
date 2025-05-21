@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Bike } from "lucide-react";
 
 export default function Header() {
@@ -14,14 +13,6 @@ export default function Header() {
           <Bike size={32} />
           <h1 className="text-2xl font-bold font-mono">markus</h1>
         </div>
-
-        <Link
-          href="/admin"
-          prefetch={true}
-          className="text-sm/6 font-semibold text-gray-900"
-        >
-          Dashboard
-        </Link>
       </nav>
     </header>
   );

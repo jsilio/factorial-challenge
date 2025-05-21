@@ -1,84 +1,144 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { trpc } from "@/utils/trpc";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PriceSummaryProps {
   selections: Record<string, string>;
+  onSelectionReset?: () => void;
 }
 
-export function PriceSummary({ selections }: PriceSummaryProps) {
-  const debouncedSelections = useDebouncedValue(selections, 300);
+function PriceSummarySkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="h-5 w-3/4" />
+      <Skeleton className="h-5 w-full" />
+      <Skeleton className="h-5 w-5/6" />
+      <Separator className="my-3" />
+      <Skeleton className="h-6 w-1/2" />
+    </div>
+  );
+}
 
-  const { data: priceResult, isLoading } = useQuery(
+export function PriceSummary({
+  selections,
+  onSelectionReset,
+}: PriceSummaryProps) {
+  const debouncedSelections = useDebouncedValue(selections, 300);
+  const selectionCount = Object.keys(debouncedSelections).filter(
+    (key) => debouncedSelections[key],
+  ).length;
+
+  const { data, isLoading } = useQuery(
     trpc.bike.calculatePrice.queryOptions(
       { selections: debouncedSelections },
-      { enabled: Object.keys(debouncedSelections).length > 0 },
+      {
+        enabled: selectionCount > 0,
+        staleTime: 10000,
+      },
     ),
   );
 
-  if (isLoading) {
-    return (
-      <div className="space-y-3">
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-6 w-1/2 mt-4" />
-      </div>
-    );
-  }
+  const hasErrors = data?.errors && data.errors.length > 0;
 
-  if (priceResult?.errors?.length) {
-    return (
-      <div className="rounded-md bg-destructive/10 p-3 text-destructive text-sm">
-        {priceResult.errors.map((error) => (
-          <p key={error}>{error}</p>
-        ))}
-      </div>
-    );
-  }
+  return (
+    <Card className="sticky top-20 h-fit border-0 bg-muted/40">
+      <CardHeader className="flex justify-between items-center">
+        <CardTitle className="text-lg">Price Summary</CardTitle>
+        {selectionCount > 0 && onSelectionReset && hasErrors && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onSelectionReset()}
+            className="text-muted-foreground hover:text-destructive"
+            aria-label="Reset all selections"
+          >
+            Reset configuration
+          </Button>
+        )}
+      </CardHeader>
 
-  if (priceResult?.breakdown?.length) {
-    return (
-      <>
-        <div className="space-y-2">
-          {priceResult.breakdown.map((item) => (
-            <div key={item.label} className="flex justify-between text-sm">
-              <span>{item.label}</span>
-              <span>
-                {item.basePrice}€
-                {item.adjustment !== 0 && (
-                  <span
-                    className={
-                      item.adjustment > 0
-                        ? "text-destructive"
-                        : "text-green-600"
-                    }
-                  >
-                    {" "}
-                    ({item.adjustment > 0 ? "+" : ""}
-                    {item.adjustment}€)
+      <CardContent>
+        {hasErrors && (
+          <Alert variant="destructive" className="my-4">
+            <AlertTitle>Invalid Configuration</AlertTitle>
+            <AlertDescription>
+              <ul className="list-disc pl-5 space-y-1">
+                {data.errors.map((error) => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {isLoading && selectionCount > 0 ? (
+          <PriceSummarySkeleton />
+        ) : selectionCount > 0 ? (
+          <div className="space-y-2">
+            {data?.breakdown && data.breakdown.length > 0 ? (
+              data.breakdown.map((item) => (
+                <div key={item.label} className="flex justify-between text-sm">
+                  <span>{item.label}</span>
+
+                  <span>
+                    {item.basePrice}€
+                    {item.adjustment !== 0 && (
+                      <span
+                        className={
+                          item.adjustment > 0
+                            ? "text-destructive"
+                            : "text-green-600"
+                        }
+                      >
+                        {" "}
+                        ({item.adjustment > 0 ? "+" : ""}
+                        {item.adjustment}€)
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
-            </div>
-          ))}
-        </div>
-        <Separator className="my-3" />
-        <div className="flex justify-between items-center">
-          <span className="font-semibold">Total</span>
-          <span className="text-xl font-bold">{priceResult.totalPrice}€</span>
-        </div>
-        <Button className="w-full mt-4" disabled={!priceResult.totalPrice}>
-          Order Now
-        </Button>
-      </>
-    );
-  }
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {isLoading
+                  ? "Calculating price..."
+                  : "Update selections to see price details."}
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">
+            Select bike parts to see price details.
+          </p>
+        )}
 
-  return <p className="text-muted-foreground">Select parts to see pricing</p>;
+        {selectionCount > 0 && !isLoading && (
+          <>
+            <Separator className="my-3" />
+            <div className="flex justify-between items-center">
+              <span className="font-medium">Total</span>
+              {hasErrors ? (
+                <span className="text-lg font-bold text-destructive">
+                  Review selections
+                </span>
+              ) : data?.totalPrice !== null ? (
+                <span className="text-xl font-semibold">
+                  {data?.totalPrice}€
+                </span>
+              ) : (
+                <Skeleton className="h-6 w-20" />
+              )}
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
 }

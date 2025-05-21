@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { PriceSummary } from "@/components/price-summary";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -13,13 +15,12 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 
 import { BikeConfigInput } from "../../../server/src/routers/schema";
-import { PriceSummary } from "@/components/price-summary";
 
 export function BikeConfigurator() {
   const form = useForm<BikeConfigInput>({
@@ -29,39 +30,61 @@ export function BikeConfigurator() {
 
   const selections = form.watch("selections");
 
-  const handleSubmit = form.handleSubmit((data) => {
-    console.log(data);
-  });
+  const handleResetAllSelections = () => {
+    const currentValues = form.getValues();
+    const resetSelections: Record<string, string> = {};
+    if (currentValues.selections) {
+      for (const key in currentValues.selections) {
+        resetSelections[key] = "";
+      }
+    }
 
-  const { data: partOptions, isLoading } = useQuery(
-    trpc.bike.getPartOptions.queryOptions(),
-  );
+    form.reset({ ...currentValues, selections: resetSelections });
+  };
+
+  const {
+    data: partOptions,
+    error,
+    isLoading,
+  } = useQuery(trpc.bike.getPartOptions.queryOptions());
   const categories = partOptions ? Object.keys(partOptions) : [];
 
-  if (isLoading) return <ConfiguratorSkeleton />;
+  if (isLoading) return <BikeConfiguratorSkeleton />;
+
+  if (error)
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
+
   if (!partOptions) return null;
 
   return (
-    <main className="container mx-auto max-w-7xl">
+    <main className="container mx-auto max-w-7xl py-8">
       <div className="grid gap-12 lg:grid-cols-[1fr_400px]">
-        <Card>
-          <CardContent>
-            <PriceSummary selections={selections} />
-          </CardContent>
-        </Card>
+        <PriceSummary
+          selections={selections}
+          onSelectionReset={handleResetAllSelections}
+        />
 
         <Card>
+          <CardHeader>
+            <CardTitle>Configure your dream bike</CardTitle>
+          </CardHeader>
+
           <CardContent>
             <Form {...form}>
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form className="space-y-8">
                 {categories.map((category) => (
                   <FormField
                     key={category}
                     control={form.control}
                     name={`selections.${category}` as const}
                     render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="text-base font-semibold capitalize">
+                      <FormItem className="space-y-3">
+                        <FormLabel className="font-medium capitalize">
                           {category.replace(/_/g, " ").toLowerCase()}
                         </FormLabel>
 
@@ -108,19 +131,44 @@ export function BikeConfigurator() {
   );
 }
 
-function ConfiguratorSkeleton() {
+function BikeConfiguratorSkeleton() {
   return (
-    <div className="space-y-6">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="space-y-3">
-          <Skeleton className="h-5 w-32" />
-          <div className="space-y-2">
-            <Skeleton className="h-12 w-full rounded-md" />
-            <Skeleton className="h-12 w-full rounded-md" />
-            <Skeleton className="h-12 w-full rounded-md" />
-          </div>
-        </div>
-      ))}
-    </div>
+    <main className="container mx-auto max-w-7xl py-8">
+      <div className="grid gap-12 lg:grid-cols-[1fr_400px]">
+        <Card className="sticky top-20 h-fit">
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <Skeleton className="h-6 w-1/2 mb-4" />
+              <Skeleton className="h-5 w-3/4" />
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-5/6" />
+              <Separator className="my-3" />
+              <Skeleton className="h-7 w-1/2" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-7 w-48" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="h-5 w-32" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-12 w-full rounded-md border p-3" />
+                    <Skeleton className="h-12 w-full rounded-md border p-3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 }
