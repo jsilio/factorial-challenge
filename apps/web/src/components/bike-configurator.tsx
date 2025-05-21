@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 
 import { BikeConfigInput } from "../../../server/src/routers/schema";
+import { PriceSummary } from "@/components/price-summary";
 
 export function BikeConfigurator() {
   const form = useForm<BikeConfigInput>({
@@ -26,73 +27,84 @@ export function BikeConfigurator() {
     defaultValues: { selections: {} },
   });
 
-  const { data: partOptions, isLoading } = useQuery(
-    trpc.bike.getPartOptions.queryOptions(),
-  );
-  const categories = partOptions ? Object.keys(partOptions) : [];
+  const selections = form.watch("selections");
 
   const handleSubmit = form.handleSubmit((data) => {
     console.log(data);
   });
 
-  if (isLoading) return <ConfiguratorSkeleton />;
+  const { data: partOptions, isLoading } = useQuery(
+    trpc.bike.getPartOptions.queryOptions(),
+  );
+  const categories = partOptions ? Object.keys(partOptions) : [];
 
+  if (isLoading) return <ConfiguratorSkeleton />;
   if (!partOptions) return null;
 
   return (
-    <Card>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {categories.map((category) => (
-              <FormField
-                key={category}
-                control={form.control}
-                name={`selections.${category}` as const}
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="text-base font-semibold capitalize">
-                      {category.replace(/_/g, " ").toLowerCase()}
-                    </FormLabel>
+    <main className="container mx-auto max-w-7xl">
+      <div className="grid gap-12 lg:grid-cols-[1fr_400px]">
+        <Card>
+          <CardContent>
+            <PriceSummary selections={selections} />
+          </CardContent>
+        </Card>
 
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        {partOptions[category].map((option) => (
-                          <div
-                            key={option.id}
-                            className={cn(
-                              "flex items-center space-x-3 rounded-md border p-3 cursor-pointer transition-colors",
-                              "hover:bg-muted/50[ &:has([data-state=checked])]:bg-muted [&:has([data-state=checked])]:border-primary",
-                            )}
+        <Card>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {categories.map((category) => (
+                  <FormField
+                    key={category}
+                    control={form.control}
+                    name={`selections.${category}` as const}
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-base font-semibold capitalize">
+                          {category.replace(/_/g, " ").toLowerCase()}
+                        </FormLabel>
+
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            value={field.value}
                           >
-                            <RadioGroupItem
-                              value={option.value}
-                              id={option.id}
-                            />
-                            <FormLabel
-                              htmlFor={option.id}
-                              className="flex justify-between w-full cursor-pointer"
-                            >
-                              <span>{option.label}</span>
-                              <span className="text-muted-foreground">
-                                {option.basePrice}€
-                              </span>
-                            </FormLabel>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            ))}
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                            {partOptions[category].map((option) => (
+                              <div
+                                key={option.id}
+                                className={cn(
+                                  "flex items-center space-x-3 rounded-md border p-3 cursor-pointer transition-colors",
+                                  "hover:bg-muted/50 [&:has([data-state=checked])]:bg-muted [&:has([data-state=checked])]:border-primary",
+                                )}
+                              >
+                                <RadioGroupItem
+                                  value={option.value}
+                                  id={option.id}
+                                />
+                                <FormLabel
+                                  htmlFor={option.id}
+                                  className="flex justify-between w-full cursor-pointer"
+                                >
+                                  {option.label}
+                                  <span className="text-muted-foreground">
+                                    +€{option.basePrice}
+                                  </span>
+                                </FormLabel>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 }
 
