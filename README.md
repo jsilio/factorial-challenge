@@ -4,7 +4,7 @@ A full-stack MVP for Markus' Bike Shop, enabling customers and staff to configur
 
 ## Project Overview
 
-This project is a monorepo built with modern TypeScript tooling (Next.js, tRPC, Prisma, Tailwind, shadcn/ui). It uses **Turborepo** for monorepo orchestration and **pnpm workspaces** for efficient dependency management. Users can select bike parts, business rules are enforced for valid configurations, and prices—including combination-based adjustments—are calculated instantly.
+This project is a monorepo built with modern TypeScript tooling (Next.js, tRPC, Prisma, Tailwind, shadcn/ui). It uses **Turborepo** for monorepo orchestration and **pnpm workspaces** for efficient dependency management. Users can select bike parts, business rules are enforced for valid configurations, and prices, including combination-based adjustments, are calculated instantly.
 
 ## Getting Started
 
