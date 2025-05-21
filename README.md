@@ -1,4 +1,4 @@
-# factorial-challenge
+# Factorial Challenge
 
 A full-stack MVP for Markus' Bike Shop, enabling customers and staff to configure custom bikes, enforce compatibility rules, and calculate dynamic pricing in real time.
 
