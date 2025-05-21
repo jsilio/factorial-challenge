@@ -1,7 +1,13 @@
 {
-  "name": "server",
+  "name": "@markus/api",
+  "version": "0.1.0",
   "main": "src/index.ts",
   "type": "module",
+  "exports": {
+    "./db": "./prisma/index.ts",
+    "./routers": "./src/routers/index.ts",
+    "./schema": "./src/routers/schema.ts"
+  },
   "scripts": {
     "build": "tsc && tsc-alias",
     "check-types": "tsc --noEmit",

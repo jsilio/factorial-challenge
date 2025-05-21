@@ -1,7 +1,7 @@
 import { PartCategory, type PartOption } from "@/db";
 import { publicProcedure, router } from "@/lib/trpc";
 
-import { BikeConfigInput, BikeConfigOutput } from "./schema";
+import { BikeConfigInput, BikeConfigOutput } from "./bike.schema";
 
 export const bikeRouter = router({
   getPartOptions: publicProcedure.query(async ({ ctx }) => {

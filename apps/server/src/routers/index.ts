@@ -1,6 +1,6 @@
 import { publicProcedure, router } from "@/lib/trpc";
 
-import { bikeRouter } from "./bike";
+import { bikeRouter } from "./bike/bike.routes";
 
 export const appRouter = router({
   bike: bikeRouter,

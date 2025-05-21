@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
+import { BikeConfigInput } from "@markus/api/schema";
+
 import { BikePreview } from "@/components/bike-preview";
 import { PriceSummary } from "@/components/price-summary";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -20,8 +22,6 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
-
-import { BikeConfigInput } from "../../../server/src/routers/schema";
 
 export function BikeConfigurator() {
   const form = useForm<BikeConfigInput>({
