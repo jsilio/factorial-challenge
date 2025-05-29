@@ -10,12 +10,12 @@
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:web": "turbo -F web dev",
-    "dev:server": "turbo -F server dev",
-    "db:push": "turbo -F server db:push",
-    "db:studio": "turbo -F server db:studio",
-    "db:generate": "turbo -F server db:generate",
-    "db:migrate": "turbo -F server db:migrate",
-    "db:seed": "turbo -F server db:seed",
+    "dev:server": "turbo -F @markus/api dev",
+    "db:push": "turbo -F @markus/api db:push",
+    "db:studio": "turbo -F @markus/api db:studio",
+    "db:generate": "turbo -F @markus/api db:generate",
+    "db:migrate": "turbo -F @markus/api db:migrate",
+    "db:seed": "turbo -F @markus/api db:seed",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
